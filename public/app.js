@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/todos";
+const API_URL = "https://todo-app-serverless.netlify.app/.netlify/functions/";
 
 //Select DOM
 const todoInput = document.querySelector(".todo-input");
@@ -69,7 +69,7 @@ function filterTodo(e) {
 }
 
 async function getTodos() {
-  let todos = await (await fetch(API_URL)).json();
+  let todos = await (await fetch(API_URL + "get-todos")).json();
 
   todos.forEach(function ({ _id: id, name: todo }) {
     //Create todo div
@@ -98,13 +98,7 @@ async function getTodos() {
 }
 
 async function saveTodo(todo) {
-  await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name: todo }),
-  });
+  await fetch(`${API_URL}add-todo?name=${todo}`);
 }
 
 async function todoAction(e) {
@@ -114,9 +108,7 @@ async function todoAction(e) {
     const todo = item.parentElement;
     todo.classList.add("fall");
 
-    await fetch(`${API_URL}/${todo.id}`, {
-      method: "DELETE",
-    });
+    await fetch(`${API_URL}delete-todo?id=${todo.id}`);
 
     todo.addEventListener("transitionend", (e) => {
       todo.remove();
@@ -125,8 +117,6 @@ async function todoAction(e) {
   if (item.classList[0] === "complete-btn") {
     const todo = item.parentElement;
     todo.classList.toggle("completed");
-    await fetch(`${API_URL}/${todo.id}`, {
-      method: "PUT",
-    });
+    await fetch(`${API_URL}update-todo?id=${todo.id}`);
   }
 }
